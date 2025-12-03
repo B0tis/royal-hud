@@ -1,13 +1,16 @@
 local dev = false
+local nuiReady = false
 
 RegisterNetEvent('royal-hud:toggleDevmode', function()
     dev = not dev
 end)
 
 Citizen.CreateThread(function ()
+    DisplayRadar(false)
     while not bridge.isPlayerLoaded() do
         Wait(100)
     end
+    DisplayRadar(true)
     local settings = json.decode(GetResourceKvpString(Config.SaveName))
 
     if settings == nil or settings == {} then
@@ -25,10 +28,22 @@ Citizen.CreateThread(function ()
             }
         })
     end
-
+    
     Wait(1000)
+    playerLoaded()
     loadMinimap()
 end)
+
+function playerLoaded()
+    while nuiReady == false do
+        Wait(100)
+    end
+    dprint('Player loaded, notifying NUI.')
+    SendNUIMessage({
+        type = 'playerLoaded',
+        data = {}
+    })
+end
 
 RegisterNuiCallback('saveSettings', function(data, cb)
     local settings = data
@@ -45,10 +60,14 @@ RegisterCommand('hudsettings', function()
     SetNuiFocus(true, true)
 end)
 
-RegisterNUICallback("close", function(_, cb)
+RegisterNUICallback('close', function(_, cb)
     TriggerScreenblurFadeOut(1000)
     SetNuiFocus(false, false)
     cb({ success = true })
+end)
+
+RegisterNUICallback('hud-ready', function ()
+    nuiReady = true
 end)
 
 Citizen.CreateThread(function ()
@@ -81,8 +100,8 @@ Citizen.CreateThread(function ()
                 }
             })
 
-            Citizen.Wait(Config.TickRate)
         end
+        Citizen.Wait(Config.TickRate)
     end
 end)
 

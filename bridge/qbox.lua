@@ -3,7 +3,7 @@ if Config.Framework == 'QBX' then
     bridge = {}
     local playerLoaded = false
 
-    RegisterNetEvent("QBCore:Client:OnPlayerLoaded", function()
+    AddEventHandler("QBCore:Client:OnPlayerLoaded", function()
         playerLoaded = true
         dprint("Player Successfully Loaded")
     end)
@@ -19,7 +19,7 @@ if Config.Framework == 'QBX' then
     end
 
     function bridge.isPlayerLoaded()
-        return playerLoaded
+        return Config.Debug or playerLoaded
     end
 
 end

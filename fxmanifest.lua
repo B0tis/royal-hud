@@ -3,8 +3,8 @@ lua54 'yes'
 use_experimental_fxv2_oal 'yes'
 games {'gta5'}
 
--- ui_page "web/build/index.html"
-ui_page 'http://localhost:5173/'
+ui_page "web/build/index.html"
+-- ui_page 'http://localhost:5173/' -- dev
 
 shared_script 'shared/config.lua'
 

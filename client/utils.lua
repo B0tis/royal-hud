@@ -19,6 +19,7 @@ end
 
 -- https://github.com/Qbox-project/qbx_hud/blob/c5b804c82c8ef985ef7b22e7f90d5ae12d3deb51/client/main.lua#L261
 function loadMinimap()
+    print('Loading custom minimap...')
     Wait(50)
     local defaultAspectRatio = 1920 / 1080
     local resolutionX, resolutionY = GetActiveScreenResolution()

@@ -10,6 +10,7 @@ import {
 } from '@hugeicons/core-free-icons'
 
 const useStore = create((set, get) => ({
+    playerLoaded: false,
     SettingsVisible: false,
 
     directions: [
@@ -40,12 +41,16 @@ const useStore = create((set, get) => ({
     },
 
     hudSettings: {
+        // Warniungs Page
         enableWarnings: true,
         warningThreshold: 10,
         warningColor: '#ef4444',
+
+        // Coordinates Page
         showCoordinates: false,
         showStreetName: true,
         coordFormat: 'decimal',
+
         statuses: {
             hunger: { enabled: true, color: '#f59e0b', hideUnder: 0 },
             thirst: { enabled: true, color: '#3b82f6', hideUnder: 0 },
@@ -70,7 +75,7 @@ const useStore = create((set, get) => ({
 
     setState: (payload) => {
         if (!payload || typeof payload.type !== 'string') return
-
+        
         if (payload.type === 'showUI') {
             set({ SettingsVisible: true })
             return
@@ -85,6 +90,11 @@ const useStore = create((set, get) => ({
             SendNuiCallback('close', {}, () => {
                 set({ SettingsVisible: false })
             })
+            return
+        }
+
+        if (payload.type === 'playerLoaded') {
+            set({ playerLoaded: true })
             return
         }
 
