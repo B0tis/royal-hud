@@ -2,10 +2,20 @@ import { useEffect, useState } from 'preact/hooks'
 import useStore from '../state/store';
 
 const Compass = () => {
-    const { statusValues, directions } = useStore();
-    const heading = statusValues?.compass || 0;
-    const streetName = statusValues?.streetName || "Unknown Road";
-    const areaName = statusValues?.areaName || "Unknown Area";
+    const { statusValues, directions, hudSettings } = useStore();
+    
+    // Settings with defaults (true if not set)
+    const showCompass = hudSettings?.showCompass !== false;
+    const showAngles = hudSettings?.showAngles !== false;
+    const showStreetName = hudSettings?.showStreetName !== false;
+    const showAreaName = hudSettings?.showAreaName !== false;
+
+    // Don't render if compass is disabled
+    if (!showCompass) return null;
+
+    const heading = statusValues?.compass ?? 0;
+    const streetName = statusValues?.streetName ?? "Unknown Road";
+    const areaName = statusValues?.areaName ?? "Unknown Area";
 
     const ticks = [];
     for (let i = 0; i < 360; i += 3) {
@@ -26,6 +36,7 @@ const Compass = () => {
             <div className="relative w-[500px] h-12">
 
                 <div className="absolute inset-x-0 top-0 h-5 flex items-center justify-center">
+                    {/* Cardinal directions */}
                     {directions.map((dir) => {
                         const pos = getPosition(dir.degree);
                         if (Math.abs(pos) > visibleRange) return null;
@@ -46,7 +57,8 @@ const Compass = () => {
                         );
                     })}
 
-                    {[...Array(24)].map((_, i) => {
+                    {/* Angle/Degree numbers - only show if showAngles is true */}
+                    {showAngles && [...Array(24)].map((_, i) => {
                         const degree = i * 15;
                         const pos = getPosition(degree);
                         if (Math.abs(pos) > visibleRange) return null;
@@ -108,12 +120,16 @@ const Compass = () => {
             </div>
 
             <div className="flex flex-col items-center mt-0">
-                <span className="text-white/80 text-sm font-medium tracking-wide">
-                    {streetName}
-                </span>
-                <span className="text-white/40 text-xs">
-                    {areaName}
-                </span>
+                {showStreetName && (
+                    <span className="text-white/80 text-sm font-medium tracking-wide">
+                        {streetName}
+                    </span>
+                )}
+                {showAreaName && (
+                    <span className="text-white/40 text-xs">
+                        {areaName}
+                    </span>
+                )}
             </div>
         </div>
     )

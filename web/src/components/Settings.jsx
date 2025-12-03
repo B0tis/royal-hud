@@ -2,11 +2,12 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Settings01Icon, Cancel01Icon, Alert02Icon, DashboardSquare02Icon, Location01Icon } from '@hugeicons/core-free-icons'
+import { Settings01Icon, Cancel01Icon, Alert02Icon, DashboardSquare02Icon, Location01Icon, Car01Icon } from '@hugeicons/core-free-icons'
 import useStore from '../state/store'
 import CoordinatesPage from '../pages/CoordinatesPage'
 import WarningsPage from '../pages/WarningsPage'
 import StatusesPage from '../pages/StatusesPage'
+import VehiclePage from '../pages/VehiclePage'
 
 const Settings = () => {
     const { hudSettings, setHudSettings, setState } = useStore();
@@ -16,6 +17,7 @@ const Settings = () => {
     const pages = [
         { id: 'warnings', icon: Alert02Icon, label: 'Warnings', color: '#ef4444' },
         { id: 'statuses', icon: DashboardSquare02Icon, label: 'Statuses', color: '#3b82f6' },
+        { id: 'vehicle', icon: Car01Icon, label: 'Vehicle', color: '#a855f7' },
         { id: 'coordinates', icon: Location01Icon, label: 'Coordinates', color: '#22c55e' },
     ];
 
@@ -112,6 +114,9 @@ const Settings = () => {
                         )}
                         {activePage === 'statuses' && (
                             <StatusesPage />
+                        )}
+                        {activePage === 'vehicle' && (
+                            <VehiclePage />
                         )}
                         {activePage === 'coordinates' && (
                             <CoordinatesPage />
