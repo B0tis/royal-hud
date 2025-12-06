@@ -29,14 +29,21 @@ const VehicleHud = () => {
                             className="text-white font-black tracking-tighter"
                             style={{ fontSize: '4rem' }}
                         >
-                            {displaySpeed}
+                            {displaySpeed}23
                         </span>
                     </div>
                 )}
 
                 {showBars && (
                     <div className="flex flex-col items-center relative w-60 gap-2">
-                        <span className="absolute right-0 top-[-1rem] text-white/60 text-sm font-bold tracking-wider -mt-2">
+                        <span className="absolute right-0 top-[-1rem] text-white/60 text-sm font-bold flex items-center tracking-wider -mt-2">
+                            
+                            {/* Gear indicator */}
+                            <div className="absolute top-[-2rem] right-0 bg-white/20 w-6 h-6 rounded-md flex items-center justify-center">
+                                <span className="text-white font-bold tracking-wider">1</span>
+                            </div>
+
+                            {/* Speed Unit MPH / KMH */}
                             {speedUnit}
                         </span>
 

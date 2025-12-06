@@ -192,52 +192,93 @@ const MainHud = () => {
         <>
             <div className="gap-4 flex items-center">
                 <div className={`flex flex-col text-white ${isDamaged ? 'shake' : ''}`}>
-                    <div className={`border w-80 p-1 transition-colors duration-100 ${isDamaged ? 'border-red-500' : 'border-white/50'}`}>
-                        <div className="relative h-2.5 stripe-container">
-                            <div className="absolute inset-0 flex gap-[3px]">
-                                {[...Array(sectors)].map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className="h-full bg-white/20 flex-1"
-                                    />
-                                ))}
-                            </div>
+                <div className={`border w-80 p-1 transition-colors duration-100 ${isDamaged ? 'border-red-500' : 'border-white/50'}`}>
+    <div className="relative h-2.5">
+        {/* Background segments with gaps */}
+        <div className="absolute inset-0 flex gap-[3px]">
+            {[...Array(sectors)].map((_, index) => (
+                <div
+                    key={index}
+                    className="h-full bg-white/20 flex-1"
+                />
+            ))}
+        </div>
 
-                            {damageShieldWidth !== null && (
-                                <div
-                                    className="absolute top-0 left-0 h-full bg-red-500"
-                                    style={{ width: `${damageShieldWidth}%` }}
-                                />
-                            )}
-
-                            <div
-                                className={`absolute top-0 left-0 h-full ${isAddingShield ? 'animated-stripes-orange' : 'animated-stripes-white'}`}
-                                style={{ width: `${targetShield}%` }}
+        {/* Damage indicator - segmented */}
+        {damageShieldWidth !== null && (
+            <div className="absolute inset-0 flex gap-[3px]">
+                {[...Array(sectors)].map((_, index) => {
+                    const sectorStart = (index / sectors) * 100;
+                    const sectorEnd = ((index + 1) / sectors) * 100;
+                    
+                    if (damageShieldWidth <= sectorStart) return <div key={index} className="flex-1" />;
+                    
+                    const fillPercent = damageShieldWidth >= sectorEnd 
+                        ? 100 
+                        : ((damageShieldWidth - sectorStart) / (sectorEnd - sectorStart)) * 100;
+                    
+                    return (
+                        <div key={index} className="flex-1 h-full overflow-hidden">
+                            <div 
+                                className="h-full bg-red-500"
+                                style={{ width: `${fillPercent}%` }}
                             />
-
-                            <div
-                                className="absolute top-0 left-0 h-full transition-colors duration-100"
-                                style={{
-                                    width: `${currentShield}%`,
-                                    backgroundColor: isDamaged ? '#ef4444' : '#5980b3'
-                                }}
-                            />
-
-                            <div className="absolute inset-0 flex pointer-events-none">
-                                {[...Array(sectors - 1)].map((_, index) => (
-                                    <div
-                                        key={index}
-                                        className="h-full w-[3px] bg-gray-900"
-                                        style={{
-                                            position: 'absolute',
-                                            left: `${((index + 1) * 100) / sectors}%`,
-                                            transform: 'translateX(-50%)'
-                                        }}
-                                    />
-                                ))}
-                            </div>
                         </div>
+                    );
+                })}
+            </div>
+        )}
+
+        {/* Target (animated stripes) - segmented */}
+        <div className="absolute inset-0 flex gap-[3px]">
+            {[...Array(sectors)].map((_, index) => {
+                const sectorStart = (index / sectors) * 100;
+                const sectorEnd = ((index + 1) / sectors) * 100;
+                
+                if (targetShield <= sectorStart) return <div key={index} className="flex-1" />;
+                
+                const fillPercent = targetShield >= sectorEnd 
+                    ? 100 
+                    : ((targetShield - sectorStart) / (sectorEnd - sectorStart)) * 100;
+                
+                return (
+                    <div key={index} className="flex-1 h-full overflow-hidden">
+                        <div 
+                            className={`h-full ${isAddingShield ? 'animated-stripes-orange' : 'animated-stripes-white'}`}
+                            style={{ width: `${fillPercent}%` }}
+                        />
                     </div>
+                );
+            })}
+        </div>
+
+        {/* Current fill - segmented */}
+        <div className="absolute inset-0 flex gap-[3px]">
+            {[...Array(sectors)].map((_, index) => {
+                const sectorStart = (index / sectors) * 100;
+                const sectorEnd = ((index + 1) / sectors) * 100;
+                
+                if (currentShield <= sectorStart) return <div key={index} className="flex-1" />;
+                
+                const fillPercent = currentShield >= sectorEnd 
+                    ? 100 
+                    : ((currentShield - sectorStart) / (sectorEnd - sectorStart)) * 100;
+                
+                return (
+                    <div key={index} className="flex-1 h-full overflow-hidden">
+                        <div 
+                            className="h-full transition-colors duration-100"
+                            style={{ 
+                                width: `${fillPercent}%`,
+                                backgroundColor: isDamaged ? '#ef4444' : '#5980b3'
+                            }}
+                        />
+                    </div>
+                );
+            })}
+        </div>
+    </div>
+</div>
 
                     <div className={`border-b border-l border-r w-80 p-1 transition-colors duration-100 ${isDamaged ? 'border-red-500' : 'border-white/50'}`}>
                         <div className="relative h-2.5 bg-white/20 overflow-hidden">

@@ -76,7 +76,7 @@ const Compass = () => {
                 </div>
 
                 <div className="absolute inset-x-0 top-6 h-3 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-transparent to-gray-900 z-10 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-gray-900/10 via-gray-950/40 to-gray-900/10 z-10 pointer-events-none" />
 
                     {ticks.map((degree) => {
                         const pos = getPosition(degree);
