@@ -90,10 +90,13 @@ Citizen.CreateThread(function ()
             local hunger, thirst = bridge.getPlayerStatus()
             local veh = GetVehiclePedIsIn(ped, false)
             local inVeh = veh ~= 0
+            local currentGear
 
             if inVeh and inVeh ~= 0 then
                 local rpm = GetVehicleCurrentRpm(veh) * 100
                 local engineHealth = GetVehicleEngineHealth(veh)
+                currentGear = GetVehicleCurrentGear(veh)
+                if currentGear == 0 then currentGear = 'R' end
 
                 SendNUIMessage({
                     type = 'updateStatusValues',
@@ -120,6 +123,7 @@ Citizen.CreateThread(function ()
                             seatbelt = seatbelt == true and 100 or 0,
                             fuel = getFuel(veh),
                             engine = engineHealth,
+                            gear = currentGear,
                         }
                     }
                 })
@@ -155,10 +159,11 @@ if Config.Debug == true then
         local health = tonumber(args[1]) + 100
         SetEntityHealth(ped, health)
     end)
-
+    
     RegisterCommand('setArmor', function (_, args)
         local ped = PlayerPedId()
         local armor = tonumber(args[1])
+        ---@diagnostic disable-next-line: param-type-mismatch
         SetPedArmour(ped, armor)
     end)
 

@@ -32,7 +32,7 @@ const STATUS_LIST = STATUS_DEFINITIONS.map(({ id, icon, label, showInSettings })
     id, icon, label, showInSettings
 }));
 
-const DEFAULT_STATUS_SETTINGS = (
+const DEFAULT_STATUS_SETTINGS = Object.fromEntries(
     STATUS_DEFINITIONS.map(s => [
         s.id,
         { enabled: s.enabled, color: s.color, hideUnder: s.hideUnder }
@@ -43,7 +43,7 @@ const VEHICLE_STATUS_LIST = VEHICLE_STATUS_DEFINITIONS.map(({ id, icon, label })
     id, icon, label
 }));
 
-const DEFAULT_VEHICLE_SETTINGS = (
+const DEFAULT_VEHICLE_SETTINGS = Object.fromEntries(
     VEHICLE_STATUS_DEFINITIONS.map(v => [
         v.id,
         { enabled: v.enabled, color: v.color, hideUnder: v.hideUnder }
@@ -77,7 +77,6 @@ const DEFAULT_HUD_SETTINGS = {
 
     vehicle: {
         enabled: true,
-        showSpeed: true,
         showGear: true,
         speedUnit: 'MPH',
     },
@@ -96,13 +95,14 @@ const DEFAULT_STATUS_VALUES = {
     dev: 100,
     compass: 100,
     
-    inVehicle: false,
-    speed: 1,
+    inVehicle: true,
+    speed: 100,
     rpm: 0,
     nitro: 0,
     seatbelt: 0,
     fuel: 100,
     engine: 100,
+    gear: 1
 };
 
 const useStore = create((set, get) => ({
@@ -168,6 +168,8 @@ const useStore = create((set, get) => ({
             const next = typeof updater === 'function'
                 ? updater(state.hudSettings)
                 : deepMerge(state.hudSettings, updater);
+
+            console.log('Updating HUD Settings:', next);
 
             if (!isEnvBrowser()) {
                 SendNuiCallback('saveSettings', next, () => {})

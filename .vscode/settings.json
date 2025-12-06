@@ -8,6 +8,8 @@
         "dprint",
         "round",
         "bridge",
-        "getNitroLevel"
+        "getNitroLevel",
+        "playerLoaded",
+        "getFuel"
     ],
 }

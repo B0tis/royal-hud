@@ -6,8 +6,7 @@ const VehicleHud = () => {
     
     const vehicleSettings = hudSettings?.vehicle || {};
     const vehicleEnabled = vehicleSettings.enabled ?? true;
-    const showSpeed = vehicleSettings.showSpeed ?? true;
-    const showBars = vehicleSettings.showBars ?? true;
+    const showGear = vehicleSettings.showGear ?? true;
     const speedUnit = vehicleSettings.speedUnit ?? 'MPH';
 
     if (!vehicleEnabled) return null;
@@ -15,6 +14,7 @@ const VehicleHud = () => {
     const speed = statusValues?.speed ?? 100;
     const rpm = statusValues?.rpm ?? 80;
     const nitro = statusValues?.nitro ?? 50;
+    const gear = statusValues?.gear ?? 1;
 
     const displaySpeed = speedUnit === 'KMH'
         ? Math.round(speed * 3.6)
@@ -23,48 +23,43 @@ const VehicleHud = () => {
     return (
         <div className="flex gap-6 select-none items-center">
             <div className="flex flex-col items-center">
-                {showSpeed && (
-                    <div className="flex items-baseline gap-3 relative">
-                        <span 
-                            className="text-white font-black tracking-tighter"
-                            style={{ fontSize: '4rem' }}
-                        >
-                            {displaySpeed}23
-                        </span>
-                    </div>
-                )}
+                <div className="flex items-baseline gap-3 relative">
+                    <span 
+                        className="text-white font-black tracking-tighter"
+                        style={{ fontSize: '4rem' }}
+                    >
+                        {displaySpeed}
+                    </span>
+                </div>
 
-                {showBars && (
-                    <div className="flex flex-col items-center relative w-60 gap-2">
-                        <span className="absolute right-0 top-[-1rem] text-white/60 text-sm font-bold flex items-center tracking-wider -mt-2">
-                            
-                            {/* Gear indicator */}
+                <div className="flex flex-col items-center relative w-60 gap-2">
+                    <span className="absolute right-0 top-[-1rem] text-white/60 text-sm font-bold flex items-center tracking-wider -mt-2">
+                        {showGear &&
                             <div className="absolute top-[-2rem] right-0 bg-white/20 w-6 h-6 rounded-md flex items-center justify-center">
-                                <span className="text-white font-bold tracking-wider">1</span>
+                                <span className="text-white font-bold tracking-wider"> { gear } </span>
                             </div>
+                        }
 
-                            {/* Speed Unit MPH / KMH */}
-                            {speedUnit}
-                        </span>
+                        {speedUnit}
+                    </span>
 
-                        <div className="relative w-full h-2 bg-white/20 rounded-sm overflow-hidden">
-                            <div 
-                                className="absolute top-0 right-0 h-full bg-white transition-all duration-150 ease-out"
-                                style={{ width: `${rpm}%` }}
-                            />
-                        </div>
-
-                        <div className="relative w-[50%] h-1 bg-white/20 rounded-full overflow-hidden">
-                            <div 
-                                className="absolute top-0 right-0 h-full rounded-full transition-all duration-150 ease-out"
-                                style={{ 
-                                    width: `${nitro}%`,
-                                    backgroundColor: '#a855f7'
-                                }}
-                            />
-                        </div>
+                    <div className="relative w-full h-2 bg-white/20 rounded-sm overflow-hidden">
+                        <div 
+                            className="absolute top-0 right-0 h-full bg-white transition-all duration-150 ease-out"
+                            style={{ width: `${rpm}%` }}
+                        />
                     </div>
-                )}
+
+                    <div className="relative w-[50%] h-1 bg-white/20 rounded-full overflow-hidden">
+                        <div 
+                            className="absolute top-0 right-0 h-full rounded-full transition-all duration-150 ease-out"
+                            style={{ 
+                                width: `${nitro}%`,
+                                backgroundColor: '#a855f7'
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
             <div className="h-12 w-0.5 rounded-full bg-white/20"></div>
 

@@ -1,16 +1,13 @@
-// @ts-nocheck
 import { motion } from 'framer-motion';
 import { HugeiconsIcon } from '@hugeicons/react'
-import { FuelStationIcon, BeltIcon, Car01Icon } from '@hugeicons/core-free-icons'
+import { Car01Icon } from '@hugeicons/core-free-icons'
 import useStore from '../state/store';
 import StatusItem from '../components/StatusItem';
 
 const VehiclePage = () => {
     const { hudSettings, setHudSettings, vehicleStatuses } = useStore();
-    const statuses = hudSettings.vehicleStatuses || defaultVehicleStatuses;
 
     const vehicleEnabled = hudSettings?.vehicle?.enabled ?? true;
-    const showSpeed = hudSettings?.vehicle?.showSpeed ?? true;
     const showGear = hudSettings?.vehicle?.showGear ?? true;
     const speedUnit = hudSettings?.vehicle?.speedUnit ?? 'MPH';
 
@@ -55,34 +52,15 @@ const VehiclePage = () => {
                 </div>
             </div>
 
+            {/* Idk why it's bitching here, idk how to fix it :rage: */}
             {vehicleEnabled && (
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-6"
                 >
-                    {/* Display Options */}
                     <div className="space-y-3">
                         <h4 className="text-white/70 text-sm font-medium">Display Options</h4>
-                        
-                        {/* Show Speed */}
-                        <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
-                            <span className="text-white/90 text-sm">Show Speed</span>
-                            <button
-                                onClick={() => UpdateSettingings('showSpeed', !showSpeed)}
-                                className={`relative w-10 h-5 rounded-full transition-colors duration-200 ${
-                                    showSpeed ? 'bg-indigo-500' : 'bg-white/20'
-                                }`}
-                            >
-                                <motion.div 
-                                    className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-md"
-                                    animate={{ x: showSpeed ? 20 : 2 }}
-                                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                                />
-                            </button>
-                        </div>
-
-                        {/* Show Gear */}
                         <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
                             <span className="text-white/90 text-sm">Show Gear Indicator</span>
                             <button
@@ -99,7 +77,6 @@ const VehiclePage = () => {
                             </button>
                         </div>
 
-                        {/* Speed Unit */}
                         <div className="p-3 rounded-xl bg-white/5 border border-white/10">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-white/90 text-sm">Speed Unit</span>
@@ -122,7 +99,6 @@ const VehiclePage = () => {
                         </div>
                     </div>
 
-                    {/* Vehicle Status Bars */}
                     <div className="space-y-3">
                         <h4 className="text-white/70 text-sm font-medium">Status Indicators</h4>
                         {vehicleStatuses.map((status) => (

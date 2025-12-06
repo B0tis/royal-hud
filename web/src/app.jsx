@@ -19,7 +19,7 @@ import SendNuiCallback from './utils/sendnuicallback';
 
 export function App() {
     const { SettingsVisible, setState, statusValues } = useStore()
-    const isInVehicle = statusValues?.inVehicle ?? false;
+    const isInVehicle = statusValues?.inVehicle ?? true;
 
     useEffect(() => {
         if (isEnvBrowser()) {
