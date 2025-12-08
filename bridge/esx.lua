@@ -4,7 +4,7 @@ if Config.Framework == 'ESX' then
     local values = { hunger = 0, thirst = 0 }
     local playerLoaded = false
 
-    AddEventHandler("esx:playerLoaded", function()
+    RegisterNetEvent("esx:playerLoaded", function()
         playerLoaded = true
         dprint("Player Successfully Loaded")
     end)
