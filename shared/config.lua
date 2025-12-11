@@ -22,3 +22,12 @@ end
 function getNitroLevel(vehicle)
     return 0.0
 end
+
+-- Set this up according to your server requirements
+function getStress()
+    if GetResourceState('jg-stress') == 'started' then
+        return exports['jg-stress']:GetStressLevel()
+    end
+
+    return 0
+end

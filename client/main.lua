@@ -107,7 +107,7 @@ Citizen.CreateThread(function ()
 
                             hunger = hunger,
                             thirst = thirst,
-                            stress = 0,
+                            stress = getStress(),
                             energy = GetPlayerStamina(PlayerId()),
                             dev = dev == true and 100 or 0,
 
