@@ -1,0 +1,231 @@
+local dev = false
+local nuiReady = false
+local seatbelt = false
+local hudVisible = false
+
+RegisterNetEvent('royal-hud:toggleDevmode', function()
+    dev = not dev
+end)
+
+RegisterNetEvent('royal-hud:toggleHud', function(data)
+    if data == true then
+        SendNUIMessage({
+            type = 'showHud',
+            data = {}
+        })
+        hudVisible = true
+    else
+        SendNUIMessage({
+            type = 'hideHud',
+            data = {}
+        })
+        hudVisible = false
+    end
+end)
+
+
+
+RegisterNetEvent('royal-hud:toggleSeatbelt', function()
+    seatbelt = not seatbelt
+end)
+
+Citizen.CreateThread(function()
+    DisplayRadar(false)
+    while nuiReady == false do
+        Wait(100)
+    end
+    while bridge.isPlayerLoaded() == false do
+        Wait(100)
+    end
+    DisplayRadar(true)
+    local settings = json.decode(GetResourceKvpString(Config.SaveName))
+
+    if settings == nil or settings == '' then
+        dprint('No saved settings found, loading defaults.')
+        SendNUIMessage({
+            type = 'fetchDefaultSettings',
+            data = {}
+        })
+    else
+        dprint('Loaded saved settings.')
+        SendNUIMessage({
+            type = 'updateHudSettings',
+            data = {
+                hudSettings = settings
+            }
+        })
+    end
+
+    Wait(1000)
+    playerLoaded()
+    loadMinimap()
+end)
+
+function playerLoaded()
+    while nuiReady == false do
+        Wait(100)
+    end
+    dprint('Player loaded, notifying NUI.')
+    SendNUIMessage({
+        type = 'playerLoaded',
+        data = {}
+    })
+end
+
+RegisterNuiCallback('saveSettings', function(data, cb)
+    local settings = data
+    SetResourceKvp(Config.SaveName, json.encode(settings))
+    dprint('Saved HUD settings')
+    cb({ success = true })
+end)
+
+RegisterCommand('hudsettings', function()
+    TriggerScreenblurFadeIn(1000)
+    SendNUIMessage({
+        type = 'showUI',
+    })
+    SetNuiFocus(true, true)
+end)
+
+RegisterNUICallback('close', function(_, cb)
+    TriggerScreenblurFadeOut(1000)
+    SetNuiFocus(false, false)
+    cb({ success = true })
+end)
+
+RegisterNUICallback('hud-ready', function()
+    dprint('NUI is ready')
+    nuiReady = true
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        if bridge.isPlayerLoaded() and nuiReady then
+            local ped = PlayerPedId()
+            local playerCoords = GetEntityCoords(ped)
+            local camRot = GetGameplayCamRot(0)
+            local streetName = GetStreetNameFromHashKey(GetStreetNameAtCoord(playerCoords.x, playerCoords.y,
+                playerCoords.z))
+            local zoneName = GetLabelText(GetNameOfZone(playerCoords.x, playerCoords.y, playerCoords.z))
+            local hunger, thirst = bridge.getPlayerStatus()
+            local veh = GetVehiclePedIsIn(ped, false)
+            local inVeh = (veh ~= 0 and veh ~= nil)
+            local currentGear
+            local paused = IsPauseMenuActive()
+
+            if paused and hudVisible then
+                SendNUIMessage({
+                    type = 'hideHud',
+                    data = {}
+                })
+                hudVisible = false
+            elseif not paused and not hudVisible then
+                SendNUIMessage({
+                    type = 'showHud',
+                    data = {}
+                })
+                hudVisible = true
+            end
+
+            if inVeh then
+                local rpm = GetVehicleCurrentRpm(veh) * 100
+                local engineHealth = GetVehicleEngineHealth(veh)
+                currentGear = GetVehicleCurrentGear(veh)
+                if currentGear == 0 then currentGear = 'R' end
+
+                SendNUIMessage({
+                    type = 'updateStatusValues',
+                    data = {
+                        statusValues = {
+                            health = GetEntityHealth(ped) - 100,
+                            armor = GetPedArmour(ped),
+
+                            hunger = hunger,
+                            thirst = thirst,
+                            stress = getStress(),
+                            energy = GetPlayerStamina(PlayerId()),
+                            dev = dev == true and 100 or 0,
+
+                            compass = round(360.0 - ((camRot.z + 360.0) % 360.0)),
+                            streetName = streetName,
+                            areaName = zoneName,
+
+                            -- vehicle
+                            inVehicle = inVeh,
+                            speed = math.floor(GetEntitySpeed(veh)),
+                            rpm = rpm,
+                            nitro = getNitroLevel(veh),
+                            seatbelt = seatbelt == true and 100 or 0,
+                            fuel = getFuel(veh),
+                            engine = engineHealth,
+                            gear = currentGear,
+                        }
+                    }
+                })
+            else
+                SendNUIMessage({
+                    type = 'updateStatusValues',
+                    data = {
+                        statusValues = {
+                            health = GetEntityHealth(ped) - 100,
+                            armor = GetPedArmour(ped),
+
+                            hunger = hunger,
+                            thirst = thirst,
+                            stress = 0,
+                            energy = GetPlayerStamina(PlayerId()),
+                            dev = dev == true and 100 or 0,
+
+                            compass = round(360.0 - ((camRot.z + 360.0) % 360.0)),
+                            streetName = streetName,
+                            areaName = zoneName,
+                        }
+                    }
+                })
+            end
+        end
+        Citizen.Wait(Config.TickRate)
+    end
+end)
+
+if Config.Debug == true then
+    RegisterCommand('setHealth', function(_, args)
+        local ped = PlayerPedId()
+        local health = tonumber(args[1]) + 100
+        SetEntityHealth(ped, health)
+    end)
+
+    RegisterCommand('setArmor', function(_, args)
+        local ped = PlayerPedId()
+        local armor = tonumber(args[1])
+        ---@diagnostic disable-next-line: param-type-mismatch
+        SetPedArmour(ped, armor)
+    end)
+
+    RegisterCommand('seatbelt', function()
+        TriggerEvent('royal-hud:toggleSeatbelt')
+    end)
+
+    RegisterCommand('devmode', function()
+        TriggerEvent('royal-hud:toggleDevmode')
+    end)
+end
+
+RegisterCommand('resethudsettings', function()
+    SetResourceKvp(Config.SaveName, '')
+end)
+
+AddEventHandler('onResourceStart', function(resource)
+    if resource == GetCurrentResourceName() then
+        while nuiReady == false do
+            Wait(100)
+        end
+        while bridge.isPlayerLoaded() == false do
+            Wait(100)
+        end
+        SendNUIMessage({
+            type = 'showHud',
+            data = {}
+        })
+    end
+end)
