@@ -24,6 +24,10 @@ export function App() {
     useEffect(() => {
         if (isEnvBrowser()) {
             document.body.style.backgroundColor = "rgba(43, 43, 43, 1)";
+            setState({
+                type: 'playerLoaded',
+                data: {}
+            });
         }
     }, []);
 
@@ -73,14 +77,16 @@ export function App() {
                 </>
             )}
 
-            {/* Settings Button - Browser Only */}
-            {isEnvBrowser() && (
-                <button
-                    onClick={() => openSettings()}
-                    className="absolute top-5 right-5 z-20 p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all duration-200 hover:scale-105"
-                >
-                    <HugeiconsIcon icon={Settings01Icon} size={24} className="text-white/60 hover:text-white" />
-                </button>
+                    {/* Settings Button - Browser Only */}
+                    {isEnvBrowser() && (
+                        <button
+                            onClick={() => openSettings()}
+                            className="absolute top-5 right-5 z-20 p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all duration-200 hover:scale-105"
+                        >
+                            <HugeiconsIcon icon={Settings01Icon} size={24} className="text-white/60 hover:text-white" />
+                        </button>
+                    )}
+                </>
             )}
 
             {/* Settings Modal */}
